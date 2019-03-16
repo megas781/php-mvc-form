@@ -47,6 +47,8 @@ class Router
         echo '<br>';
 
 
+        //ЭТАП 1 - Получить строку запроса
+
         $theRequest = $this->getURI();
 
         echo $theRequest . '<br>';
@@ -57,12 +59,14 @@ class Router
 //        }
 
 
+        //ЭТАП 2 - Проверить наличие такого запроса в routes.php
 
         foreach ($this->routes as $key => $path) {
 
             //Проверяем, соответствует ли запрос какому-нибудь ключу в маршрутах
-            if (preg_match("~$key~", $theRequest)) {
+            if (preg_match("~^$key$~", $theRequest)) {
 
+                //ЭТАП 3 - Если есть совпадение, определить, какой контроллер и action обрабатывают этот запрос
 
                 /*Здесь мы понимаем, что такой путь есть. Парсим URI*/
                 echo 'path: '.$path . '<br>';
@@ -84,18 +88,37 @@ class Router
                 echo "имя action'a   : $controllerAction<br>";
 
 
+                $controllerPath = ROOT . '/controllers/' . $controllerName . '.php';
 
+
+                //ЭТАП 4 - Подключить файл класса контроллера
+
+                if (file_exists($controllerPath)) {
+
+                    include_once $controllerPath;
+
+                    //ЭТАП 5 - Создать контроллер, вызвать action
+                    $controllerObject = new $controllerName;
+                    $result = $controllerObject->$controllerAction();
+
+                    if (!empty($result)) {
+                        echo "<br>$result<br>";
+                    } else {
+                        echo "<br>нет результата<br>";
+                    }
+
+                }
 
             }
 
         }
 
 
-        //Получить строку запроса
-        //Проверить наличие такого запроса в routes.php
-        //Если есть совпадение, определить, какой контроллер и action обрабатывают этот запрос
-        //Подключить файл класса контроллера
-        //Создать контроллер, вызвать action
+
+
+
+
+
 
 
     }

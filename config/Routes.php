@@ -11,5 +11,5 @@
 
 return [
     'news' => 'news/index', //actionIndex в NewsController
-    'products' => 'product/list' //actionIndex в ProductController
+    'products' => 'products/list' //actionIndex в ProductController
 ];
