@@ -83,6 +83,9 @@ class Router
                 echo "имя контроллера: $controllerName<br>";
                 echo "имя action'a   : $controllerAction<br>";
 
+
+
+
             }
 
         }
