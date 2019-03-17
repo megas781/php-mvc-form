@@ -41,39 +41,54 @@ class Router
     public function run()
     {
 
-        echo 'Router started handling the request<br>';
-        echo 'Вот что мне удалось у знать про маршруты:<br>';
+//        echo 'Router started handling the request<br>';
+//        echo 'Вот что мне удалось у знать про маршруты:<br>';
+        echo '<pre>';
         print_r($this->routes);
-        echo '<br>';
+        echo '</pre><br><br>';
 
 
         //ЭТАП 1 - Получить строку запроса
 
         $theRequest = $this->getURI();
 
-        echo $theRequest . '<br>';
-//        echo $_SERVER['REQUEST_METHOD'] . '<br>';
-
-//        foreach ($this->routes as $uriKey => $uriPath) {
-//            echo $uriKey . ': ' . $uriPath . '<br>';
-//        }
+        echo 'запрос: ' . $theRequest . '<br>';
 
 
         //ЭТАП 2 - Проверить наличие такого запроса в routes.php
 
-        foreach ($this->routes as $key => $path) {
+        foreach ($this->routes as $keyPattern => $genericPath) {
 
-            //Проверяем, соответствует ли запрос какому-нибудь ключу в маршрутах
-            if (preg_match("~^$key$~", $theRequest)) {
+            /*Проверяем, соответствует ли запрос какому-нибудь ключу в маршрутах.
+            Есть фокус относительно того, что благодаря тому, что мы рассматриваем
+            $keyPattern как регулярное выражение, в мартрутах мы можем регулярное выражение
+            ПРЯМО В КЛЮЧЕ!
+            */
+            if (preg_match("~^$keyPattern$~", $theRequest)) {
 
                 //ЭТАП 3 - Если есть совпадение, определить, какой контроллер и action обрабатывают этот запрос
 
-                /*Здесь мы понимаем, что такой путь есть. Парсим URI*/
-                echo 'path: '.$path . '<br>';
 
+                /*Сначала нам нужно из шаблона genericPath создать
+                внутренний путь.
+                Давай по действиям:
+                1. Находим совпадение $keyPattern во внешнем запросе $theRequest.
+                2. Заменяем ВСЁ совпадение на внутренний путь $genericPath, в которые вставляются
+                запоминающие группы.
+                3. Таким образом, мы смогли конвертировать запрос из:
+                    внешнего     : news/sport/45
+                    во внутренний: news/view/sport/45
+                Отличие в том, что во внутреннем описывается управляющий action.
+                Для пользователя эта информация будет лишней, так что во внешнем запросе
+                о нём инфорации нет*/
+
+                $internalPath = preg_replace("~$keyPattern~", $genericPath, $theRequest);
+
+                /*Здесь мы понимаем, что такой путь есть. Парсим URI*/
+                echo 'internalPath: '.$internalPath . '<br>';
 
                 //разделяем составные части запроса типа ctrlname/actionname на части
-                $segments = explode('/', $path);
+                $segments = explode('/', $internalPath);
 
 
                 //ucfirst делает заглавной первую букву
@@ -87,24 +102,33 @@ class Router
                 echo "имя контроллера: $controllerName<br>";
                 echo "имя action'a   : $controllerAction<br>";
 
-
-                $controllerPath = ROOT . '/controllers/' . $controllerName . '.php';
-
+                //На этом этапе всё, если что-то осталось в массиве $segments, то это параметры
+                $parameters = $segments;
+                echo '<pre>';
+                print_r($parameters);
+                echo '</pre>';
 
                 //ЭТАП 4 - Подключить файл класса контроллера
+
+                $controllerPath = ROOT . '/controllers/' . $controllerName . '.php';
 
                 if (file_exists($controllerPath)) {
 
                     include_once $controllerPath;
 
                     //ЭТАП 5 - Создать контроллер, вызвать action
+
+                    //Создаём класс с помощью строки с его названием
                     $controllerObject = new $controllerName;
+                    /*Вызываем action, который возвращает булево значение.
+                    Это значение поможет прервать цикл foreach
+                    */
                     $result = $controllerObject->$controllerAction();
 
-                    if (!empty($result)) {
-                        echo "<br>$result<br>";
-                    } else {
-                        echo "<br>нет результата<br>";
+                    //т.к. если мы смогли вызвать action, то он вернёт true.
+                    //А значит можно прерывать foreach
+                    if ($result != null) {
+                        break;
                     }
 
                 }
@@ -112,13 +136,6 @@ class Router
             }
 
         }
-
-
-
-
-
-
-
 
 
     }
