@@ -5,7 +5,7 @@ class ProductsController
 
     public function actionList()
     {
-        return "product's list";
+        return "ProductsController actionList";
     }
 
 }

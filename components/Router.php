@@ -104,9 +104,9 @@ class Router
 
                 //На этом этапе всё, если что-то осталось в массиве $segments, то это параметры
                 $parameters = $segments;
-                echo '<pre>';
-                print_r($parameters);
-                echo '</pre>';
+//                echo '<pre>';
+//                print_r($parameters);
+//                echo '</pre>';
 
                 //ЭТАП 4 - Подключить файл класса контроллера
 
@@ -123,11 +123,14 @@ class Router
                     /*Вызываем action, который возвращает булево значение.
                     Это значение поможет прервать цикл foreach
                     */
-                    $result = $controllerObject->$controllerAction();
+
+                    //Вызываем action, помещая в него оставшиеся параметры при помощи call_user_func_array
+                    $result = call_user_func_array([$controllerObject, $controllerAction], $parameters);
 
                     //т.к. если мы смогли вызвать action, то он вернёт true.
                     //А значит можно прерывать foreach
                     if ($result != null) {
+                        echo 'result: ' . $result;
                         break;
                     }
 

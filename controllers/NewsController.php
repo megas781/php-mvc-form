@@ -5,13 +5,18 @@ class NewsController
 
     public function actionIndex()
     {
-        return "news' index";
+        return "NewController actionIndex performed";
     }
 
     public function actionView()
     {
-//        echo 'Просмотр новости #' . $newsId;
-        echo 'просмотр конкретной новости';
+
+        echo '<br>параметры внутри функции:';
+        echo "<pre>";
+        print_r(func_get_args());
+        echo "</pre>";
+
+        return "NewController actionView performed.";
     }
 
 }
