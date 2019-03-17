@@ -27,12 +27,17 @@ error_reporting(E_ALL);
 define('ROOT', dirname(__FILE__));
 echo '__FILE__: ' . ROOT . '<br>';
 
+
+    //Импорт компонентов системы
+
 //Импортируем роутер
 require_once ROOT . '/components/Router.php';
-
+//Импортируем класс базы данных
+require_once ROOT . '/components/Database.php';
 
 
     //3. Установка соединения с БД
+
 
 
     //4. Вызов Router

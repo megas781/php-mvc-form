@@ -2,4 +2,12 @@ AddDefaultCharset utf-8
 
 RewriteEngine on
 RewriteBase /
+
+#Не редирект, если являтеся файлом css
+#Это нужно, чтобы view могла спокойно подключать стили
+RewriteCond %{REQUEST_FILENAME} !^.*\.css$
+
+#Не редирект, только если файл находится в /template/media
+RewriteCond %{REQUEST_FILENAME} !.*template/media/.*$
+
 RewriteRule ^(.*)$ FrontController.php

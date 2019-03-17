@@ -13,6 +13,8 @@ return [
 
     'news/([a-z_-]+)/([0-9]+)' => 'news/view/$1/$2', //actionIndex в NewsController
 
+    'news/([0-9]+)' => 'news/view/$1',
+
     'news' => 'news/index', //actionIndex в NewsController
 
 
